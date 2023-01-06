@@ -187,28 +187,28 @@ namespace GoodLib
 
 	bool aesgcm::encrypt()
 	{
-		//if (!finished())
-		//{
-		//	while (!finished())
-		//		encrypt_chunk();
-		//}
-		//else
-		//{
-		//	throw ProcessFinished();
-		//}
+		if (!finished())
+		{
+			while (!finished())
+				encrypt_chunk();
+		}
+		else
+		{
+			throw ProcessFinished();
+		}
 	}
 
 	bool aesgcm::decrypt()
 	{
-		//if (!finished())
-		//{
-		//	while (!finished())
-		//		decrypt_chunk();
-		//}
-		//else
-		//{
-		//	throw ProcessFinished();
-		//}
+		if (!finished())
+		{
+			while (!finished())
+				decrypt_chunk();
+		}
+		else
+		{
+			throw ProcessFinished();
+		}
 	}
 
 	uintmax_t aesgcm::total()
@@ -243,10 +243,11 @@ namespace GoodLib
 		char nonce[12];
 		fin.read(nonce, 12);
 
-		int64_t remaining_bytes = (std::filesystem::file_size(input_file) - to_seek) - 12;
+		int64_t remaining_bytes = (std::filesystem::file_size(input_file) - (32 + 12));
 		int64_t size = remaining_bytes < (10 * (1 << 20) + 16) ? remaining_bytes : (10 * (1 << 20) + 16);
 		char* cipher = new char[size];
 		fin.read(cipher, size);
+		fin.close();
 
 		char* decrypted_data = new char[size - 16];
 		int len;
